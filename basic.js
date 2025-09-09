@@ -57,6 +57,7 @@
                 if (timeInSeconds <= 0) {
                     if (mode === "Break"){
                         clearInterval(itemID)
+                        timerCompleted();
                     }
                     countDown("Break")
                     return
@@ -75,7 +76,17 @@
         timerCompleted();
     })
 
-    timerCompleted = () => {
+    resetButton.addEventListener("click", function () {
+        startButton.disabled = false
+        resetValues()
+    })
+
+    pauseButton.addEventListener("click", function () {
+        startButton.disabled = false
+        pause = true
+    })
+
+    function timerCompleted() {
 
         console.log("Timer Completed Function Called")
         alert("Timer Over!!")
@@ -91,7 +102,7 @@
     }
 
 
-    updatePreviousSessions = () => {
+    function updatePreviousSessions() {
         var workTime = localStorage.getItem("workTime") || "";
         console.log("Work Time from localStorage: ", workTime);
         var workTimeArray = workTime.split('|');
@@ -110,13 +121,13 @@
         });
     }
 
-    document.getElementById("reset").addEventListener("click", function () {
-        document.getElementById("start").disabled = false
-        workTimeDuration.textContent = defaultLengthOfTimeMinutes
-        breakTimeDuration.textContent = defaultLengthOfBreak
+    function resetValues() {
+        workTimeDuration.value = defaultLengthOfTimeMinutes
+        breakTimeDuration.value = defaultLengthOfBreak
         workMode.textContent = "Work"
         timerText.textContent = "25:00"
         workTimeInSeconds = defaultLengthOfTimeMinutes * 60
         breakTimeInSeconds = defaultLengthOfBreak * 60
+        updatePreviousSessions();
     }
 })();
