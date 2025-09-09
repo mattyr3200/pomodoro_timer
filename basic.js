@@ -70,8 +70,43 @@
         }
 
         startTimer()
-        alert("Timer Over!!")
+        timerCompleted();
     })
+
+    timerCompleted = () => {
+
+        console.log("Timer Completed Function Called")
+        alert("Timer Over!!")
+        
+
+        var workTime = localStorage.getItem("workTime") || "";
+        var workTimeArray = workTime.split('|');
+        var duration = document.getElementById("work-time-duration").value; 
+        workTimeArray.push(duration);
+        localStorage.setItem("workTime", workTimeArray.join('|'));
+
+        updatePreviousSessions();
+    }
+
+
+    updatePreviousSessions = () => {
+        var workTime = localStorage.getItem("workTime") || "";
+        console.log("Work Time from localStorage: ", workTime);
+        var workTimeArray = workTime.split('|');
+        var list = document.getElementById("session-list");
+        if(list.firstChild !== null) {
+            while (list.firstChild) {
+                list.removeChild(list.firstChild);
+            }
+        }
+
+        workTimeArray.forEach((value) => {            
+                const li = document.createElement("li");
+                var unit = value == 1 ? "minute" : "minutes";
+                li.textContent = `Session of ${value} ${unit}`;
+                list.appendChild(li);
+        });
+    }
 
     document.getElementById("reset").addEventListener("click", function () {
         document.getElementById("start").disabled = false
