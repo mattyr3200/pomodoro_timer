@@ -23,6 +23,7 @@
 
     document.getElementById("work-time-duration").addEventListener("change", function (e) {
         workTimeInSeconds = e.target.value * 60
+        timerText.innerText = `${e.target.value}:00`
     })
 
     document.getElementById("break-time-duration").addEventListener("change", function (e) {
