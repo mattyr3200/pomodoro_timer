@@ -1,68 +1,70 @@
 (function () {
     // Getting DOM Elements
     const timerText = document.getElementById("timer")
+    const workMode = document.getElementById("work-mode")
+
+    // getting dom inputs
     const workTimeDuration = document.getElementById("work-time-duration")
     const breakTimeDuration = document.getElementById("break-time-duration")
-    const workMode = document.getElementById("work-mode")
+
+    // getting dom buttons
+    const startButton = document.getElementById("start")
+    const pauseButton = document.getElementById("pause")
+    const resetButton = document.getElementById("reset")
+
 
     //Setting Defaults
     const defaultLengthOfTimeMinutes = 25
     const defaultLengthOfBreak = 5
-    
-    // Setting initial values
-    workTimeDuration.innerText = `${defaultLengthOfTimeMinutes}`
-    breakTimeDuration.innerText = `${defaultLengthOfBreak}`
-    workMode.innerText = "Work"
-    timerText.innerText = "25:00"
 
     //having variables to keep track of time
     let workTimeInSeconds = defaultLengthOfTimeMinutes * 60
     let breakTimeInSeconds = defaultLengthOfBreak * 60
-
     let pause = false
 
-    document.getElementById("work-time-duration").addEventListener("change", function (e) {
+    // Setting initial values
+    resetValues()
+
+    // Input Event Listeners
+    workTimeDuration.addEventListener("change", function (e) {
         workTimeInSeconds = e.target.value * 60
         timerText.innerText = `${e.target.value}:00`
     })
 
-    document.getElementById("break-time-duration").addEventListener("change", function (e) {
+    breakTimeDuration.addEventListener("change", function (e) {
         breakTimeInSeconds = e.target.value * 60
     })
 
-    document.getElementById("start").addEventListener("click", function () {
+    // Button Event Listeners
+    startButton.addEventListener("click", function () {
         async function startTimer() {
-            document.getElementById("start").disabled = true
+            startButton.disabled = true
+            workTimeDuration.disabled = true
+            breakTimeDuration.disabled = true
+
             pause = false
 
-            await new Promise(function(resolve) {
-                let timerId = setInterval(() => {
-                    if (workTimeInSeconds < 0) {
-                        clearInterval(timerId)
-                        resolve()
-                        return
-                    }
-                    countDown("Work")
-                }, 1000);
-            }).then(() => {
-                let timerId = setInterval(() => {
-                    if (breakTimeInSeconds < 0) {
-                        clearInterval(timerId)
-                        resolve()
-                        return
-                    }
-                    countDown("Break")
-                }, 1000);
-            })
+            const itemID = setInterval(countDown, 1000, "Work");
 
             function countDown (mode) {
-                if (pause) return
+                if (pause) {
+                    clearInterval(itemID)
+                    return
+                }
 
                 workMode.textContent = mode
                 let timeInSeconds = mode === "Work" ? workTimeInSeconds : breakTimeInSeconds
+                if (timeInSeconds <= 0) {
+                    if (mode === "Break"){
+                        clearInterval(itemID)
+                    }
+                    countDown("Break")
+                    return
+                }
+
                 const minutes = Math.floor(timeInSeconds / 60)
                 const seconds = timeInSeconds % 60
-                
+
                 timerText.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`
 
                 mode === "Work" ? workTimeInSeconds-- : breakTimeInSeconds--
@@ -116,10 +118,5 @@
         timerText.textContent = "25:00"
         workTimeInSeconds = defaultLengthOfTimeMinutes * 60
         breakTimeInSeconds = defaultLengthOfBreak * 60
-    })
-
-    document.getElementById("pause").addEventListener("click", function () {
-        document.getElementById("start").disabled = false
-        pause = !pause
-    })
+    }
 })();
